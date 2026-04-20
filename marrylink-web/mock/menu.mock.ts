@@ -45,6 +45,18 @@ export default defineMock([
               },
             },
             {
+              path: "video",
+              component: "marrylink/video/index",
+              name: "VideoManage",
+              meta: {
+                title: "案例管理",
+                icon: "video",
+                hidden: false,
+                alwaysShow: false,
+                params: null,
+              },
+            },
+            {
               path: "user",
               component: "marrylink/user/index",
               name: "UserManage",

@@ -31,6 +31,7 @@ public class MenuController {
      * | 控制台       | ✅  | ✅  |
      * | 用户管理     | ✅  | ❌  |
      * | 主持人管理   | ✅  | ❌  |
+     * | 案例管理     | ✅  | ✅  |
      * | 订单管理     | ✅  | ✅（仅自己的） |
      * | 日志管理     | ✅  | ❌  |
      * | 档期管理     | ❌  | ✅  |
@@ -81,6 +82,8 @@ public class MenuController {
                     "UserManage", "用户管理", "user"));
             children.add(createRoute("host", "marrylink/host/index",
                     "HostManage", "主持人管理", "user"));
+            children.add(createRoute("video", "marrylink/video/index",
+                    "VideoManage", "案例管理", "video"));
             children.add(createRoute("order", "marrylink/order/index",
                     "OrderManage", "订单管理", "document"));
             children.add(createRoute("order-log", "marrylink/order-log/index",
@@ -95,6 +98,8 @@ public class MenuController {
         if (isHost) {
             children.add(createRoute("schedule", "marrylink/schedule/index",
                     "ScheduleManage", "我的档期", "calendar"));
+            children.add(createRoute("video", "marrylink/video/index",
+                    "VideoManage", "案例视频", "video"));
             children.add(createRoute("order", "marrylink/order/index",
                     "OrderManage", "我的订单", "document"));
             children.add(createRoute("questionnaire", "marrylink/questionnaire/index",
