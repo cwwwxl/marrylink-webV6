@@ -1,4 +1,4 @@
-import { get, post, BASE_URL } from '@/utils/request'
+import { get, post, del, BASE_URL } from '@/utils/request'
 
 /**
  * 获取首页展示视频列表
@@ -73,7 +73,7 @@ export function updateVideo(data) {
  * 删除视频
  */
 export function deleteVideo(id) {
-  return get(`/host-video/${id}/delete`)
+  return del(`/host-video/${id}`)
 }
 
 export { BASE_URL }
