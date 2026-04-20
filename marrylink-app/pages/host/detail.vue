@@ -58,20 +58,35 @@
         </view>
       </view>
 
-      <!-- 案例展示 - 已屏蔽 -->
-      <!-- <view class="case-section card">
-        <view class="section-title">案例展示</view>
-        <view class="case-grid">
-          <image
-            class="case-image"
-            v-for="(image, index) in caseImageUrls"
-            :key="index"
-            :src="image"
-            mode="aspectFill"
-            @click="previewImage(index)"
-          ></image>
+      <!-- 案例视频 -->
+      <view class="video-section card">
+        <view class="section-title">案例视频 ({{ hostVideos.length }})</view>
+        <view class="video-list" v-if="hostVideos.length > 0">
+          <view
+            class="video-card"
+            v-for="video in hostVideos"
+            :key="video.id"
+            @click="playVideo(video.id)"
+          >
+            <view class="video-cover-wrap">
+              <image v-if="video.coverUrl" class="video-cover-img" :src="BASE_URL + video.coverUrl" mode="aspectFill"></image>
+              <view v-else class="video-cover-default">
+                <text class="video-play-icon">▶</text>
+              </view>
+              <view class="video-duration-badge" v-if="video.duration">
+                <text>{{ formatVideoDuration(video.duration) }}</text>
+              </view>
+            </view>
+            <view class="video-card-info">
+              <text class="video-card-title">{{ video.title }}</text>
+              <text class="video-card-desc">{{ video.description || '精彩婚礼案例' }}</text>
+            </view>
+          </view>
         </view>
-      </view> -->
+        <view class="no-review" v-else>
+          <text class="no-review-text">暂无案例视频</text>
+        </view>
+      </view>
 
       <!-- 用户评价 -->
       <view class="review-section card">
@@ -111,6 +126,7 @@
 <script>
 import { mapState } from 'vuex'
 import { getHostDetail, getTagList, getHostReviews } from '@/api/host'
+import { getMyVideos } from '@/api/video'
 import { createConversation } from '@/api/chat'
 import { BASE_URL } from '@/utils/request'
 
@@ -142,7 +158,8 @@ export default {
           desc: '严格遵守时间，保证婚礼顺利'
         }
       ],
-      reviews: []  // 从订单中获取的真实评价
+      reviews: [],  // 从订单中获取的真实评价
+      hostVideos: []  // 主持人的案例视频
     }
   },
 
@@ -185,6 +202,7 @@ export default {
         .finally(() => {
           this.loadHostDetail()
           this.loadHostReviews()
+          this.loadHostVideos()
         })
     }
   },
@@ -232,6 +250,34 @@ export default {
       if (!dateStr) return ''
       const date = new Date(dateStr)
       return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+    },
+
+    // 加载主持人的案例视频
+    async loadHostVideos() {
+      try {
+        const res = await getMyVideos({ hostId: this.hostId, current: 1, size: 20, status: 1 })
+        if (res.code === 200 || res.code === '00000') {
+          this.hostVideos = res.data.records || []
+        }
+      } catch (error) {
+        console.error('加载案例视频失败:', error)
+        this.hostVideos = []
+      }
+    },
+
+    // 播放视频
+    playVideo(id) {
+      uni.navigateTo({
+        url: `/pages/video/play?id=${id}`
+      })
+    },
+
+    // 格式化视频时长
+    formatVideoDuration(seconds) {
+      if (!seconds) return ''
+      const min = Math.floor(seconds / 60)
+      const sec = seconds % 60
+      return `${min}:${sec.toString().padStart(2, '0')}`
     },
 
     // 沟通 - 跳转到实时对话
@@ -504,6 +550,90 @@ export default {
       width: 100%;
       height: 200rpx;
       border-radius: 8rpx;
+    }
+  }
+}
+
+.video-section {
+  .video-list {
+    .video-card {
+      display: flex;
+      background: #f9fafb;
+      border-radius: 16rpx;
+      overflow: hidden;
+      margin-bottom: 20rpx;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .video-cover-wrap {
+        width: 240rpx;
+        height: 160rpx;
+        position: relative;
+        flex-shrink: 0;
+
+        .video-cover-img {
+          width: 100%;
+          height: 100%;
+        }
+
+        .video-cover-default {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+
+          .video-play-icon {
+            font-size: 56rpx;
+            color: #ffffff;
+          }
+        }
+
+        .video-duration-badge {
+          position: absolute;
+          bottom: 8rpx;
+          right: 8rpx;
+          background: rgba(0, 0, 0, 0.6);
+          padding: 2rpx 10rpx;
+          border-radius: 6rpx;
+
+          text {
+            font-size: 20rpx;
+            color: #ffffff;
+          }
+        }
+      }
+
+      .video-card-info {
+        flex: 1;
+        padding: 20rpx;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .video-card-title {
+          display: block;
+          font-size: 28rpx;
+          font-weight: bold;
+          color: #333333;
+          margin-bottom: 12rpx;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .video-card-desc {
+          display: block;
+          font-size: 24rpx;
+          color: #999999;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
     }
   }
 }

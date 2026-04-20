@@ -36,7 +36,7 @@ export const marrylinkRoutes: RouteRecordRaw[] = [
         name: 'VideoManage',
         component: () => import('@/views/marrylink/video/index.vue'),
         meta: {
-          title: '案例视频',
+          title: '案例管理',
         }
       },
       {
